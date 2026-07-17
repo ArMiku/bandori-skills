@@ -103,9 +103,10 @@
 > - 公演：クリエイティブマン 03-3499-6669（月水金 12:00~16:00）
 > - 票务：eplus 支持 support-qa.eplus.jp
 
-## 未来使用场景
+## 使用场景
 
-loading...
+- 交互式对话
+- OpenClaw or Hermes 定时任务推送企划新消息
 
 ---
 
@@ -131,10 +132,10 @@ loading...
 已实现 / 当前版本：
 
 - live / event 页面查询
+- news 页面查询 + rss 定时任务推送
 
 计划中：
 
-- news 页面查询
 - discographies 页面查询
 - schedule 页面查询
 
