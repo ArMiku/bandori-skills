@@ -9,7 +9,7 @@ description: BanG Dream 官方 X（Twitter，经 nitter 镜像）动态查询 sk
 
 - 非 BanG Dream 企划相关
 - 官网 News（お知らせ / リリース等）→ `bangdream-news`
-- Live / Event 票务、抽选、场馆、场贩 → `bangdream-live-query`
+- Live / Event 票务、抽选、场馆、场贩 → `bangdream-live`
 - 非官方 X 账号动态（本 skill 仅综合官方号 `@bang_dream_info`）
 
 ## 数据源

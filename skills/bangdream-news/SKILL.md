@@ -8,7 +8,7 @@ description: BanG Dream 官网新闻/告知查询 SOP。给用户提供 BangDrea
 ## When NOT to use
 
 - 非 BanG Dream 企划相关
-- **Live / Event 的票务、抽选、场馆、场贩** → 走 `bangdream-live-query`
+- **Live / Event 的票务、抽选、场馆、场贩** → 走 `bangdream-live`
 - 官方账号动态以外的内容
 
 ## 数据源
