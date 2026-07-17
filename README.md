@@ -118,6 +118,7 @@ loading...
 
 - Python(可选)
 - Tavily MCP(建议)
+- Scrapling(可选，用于获取官方推文)
 
 ---
 
@@ -132,7 +133,8 @@ loading...
 已实现 / 当前版本：
 
 - live / event 页面查询
-- news 页面查询 + rss 定时任务推送
+- news 页面查询 + rss 更新定时推送
+- 官方推文查询 + rss 更新定时推送
 
 计划中：
 
