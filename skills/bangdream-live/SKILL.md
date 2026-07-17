@@ -1,5 +1,5 @@
 ---
-name: bangdream-live-query
+name: bangdream-live
 description: BanG Dream 官网 Live 信息查询 SOP。给用户提供 BangDream/邦多利/邦邦 企划下 Live / Event 相关信息的解答。企划包括Poppin'Party(ppp)、Afterglow(ag)、Pastel＊Palettes(pp)、Roselia(萝)、ハロー、ハッピーワールド！(hhw)、Morfonica(蝶团)、RAISE A SUILEN(RAS)、MyGO!!!!!(狗)、Ave Mujica(鸡)、夢限大みゅーたいぷ(梦团)、millsage、一家Dumb Rock!、シャッフルユニット。当用户需要查询某场 Live 票务、抽选、场馆、场贩等和对应 Live 有关的信息时，使用本 SKill。
 ---
 

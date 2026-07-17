@@ -124,7 +124,7 @@ loading...
 
 ### 注意事项
 
-- 当前已知在 `claude code` 下使用 `mimo` 系列模型(如`mimo-v2.5-pro`)时必须指定 `/bangdream-live-query` 使用 skill，不会根据 query 自动加载。
+- 当前已知在 `claude code` 下使用 `mimo` 系列模型(如`mimo-v2.5-pro`)时必须指定 `/bangdream-live` 使用 skill，不会根据 query 自动加载。
 
 ---
 
