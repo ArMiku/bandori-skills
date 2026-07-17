@@ -2,7 +2,7 @@
 
 # BanG Dream Skill
 
-### 用于查询BangDream官网相关企划信息的 Agent Skill。
+### 一组用于查询 BanG Dream! 官网企划信息的 Agent Skill。
 
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Standard-green)](https://agentskills.io)
 [![Runtime-Claude Code](https://img.shields.io/badge/Runtime-Claude%20Code-blueviolet)](#安装)
@@ -10,11 +10,17 @@
 
 <br>
 
-**帮你在[bang-dream官网](https://bang-dream.com) 查询相关信息的 Agent Skill。**
+**帮你在 [bang-dream 官网](https://bang-dream.com) 查询 Live / News / 官方推文相关信息的 Agent Skill 集合。**
 
-你可以用它来查询某场live、某个专辑发售的相关信息。
+涵盖三个相互独立、按需加载的 Skill：
 
-可以提供给 OpenClaw 和 Hermes 等个人助手的定时任务进行调用。
+| Skill | 能力 |
+|-------|------|
+| [`bangdream-live`](./skills/bangdream-live) | Live / Event 票务、抽选、场馆、场贩、特典等 |
+| [`bangdream-news`](./skills/bangdream-news) | 官网 News 资讯查询 + RSS 增量推送 |
+| [`bangdream-tweet`](./skills/bangdream-tweet) | 官方 X（[@bang_dream_info](https://x.com/bang_dream_info)）推文查询 + RSS 增量推送 |
+
+对话中直接提问即可调用；定时推送脚本输出宿主中立 JSON，可对接 OpenClaw / Hermes / cron 等调度器。
 
 [效果示例](#效果示例) · [使用场景](#使用场景) · [安装](#安装) · [注意事项](#注意事项) · [路线图](#路线图)
 
@@ -105,39 +111,84 @@
 
 ## 使用场景
 
-- 交互式对话
-- OpenClaw or Hermes 定时任务推送企划新消息
+- **交互式对话**：在 Claude Code / Codex / Hermes / OpenClaw 等 Agent 中直接问「roselia 最近的 live」「这两天有什么 news」「官方推特发了啥」，Skill 会按 `description` 自动加载；也可用 `/bangdream-live`、`/bangdream-news`、`/bangdream-tweet` 斜杠命令显式触发。
+- **定时 / 推送**：`scan_news.py`、`scan_tweets.py` 只负责「抓 RSS → 比对 state 去重 → 吐 JSON」，不绑渲染、不绑调度器。由 cron / OpenClaw / Hermes 等常驻服务拉起，自行把 JSON 渲染成 markdown / 飞书卡片 / webhook 推送。`count=0` 表示无更新，是否静默由调用方决定。
 
 ---
 
 ## 安装
 
-loading...
+### 前置依赖
 
-### 依赖
+| 依赖 | 用途 | 是否必需 |
+|------|------|---------|
+| 网页抓取 MCP（[Tavily](https://tavily.com) / web-reader 等） | live / news SOP 抓取详情页：自带浏览器 UA、返回干净 markdown、省 token | ⬜ 可选 |
+| Python 3.8+ | 仅定时推送脚本（`scan_news.py` / `scan_tweets.py`）需要；纯标准库，无需 `pip install` | ⬜ 仅推送场景 |
+| [Scrapling](https://github.com/D4Vinci/Scrapling) + camoufox | 仅 tweet 深度搜索（`search_tweets.py` 过 nitter 反爬）需要；不装则自动回退 RSS 过滤 | ⬜ 可选 |
 
-- Python(可选)
-- Tavily MCP(建议)
-- Scrapling(可选，用于获取官方推文)
+### 安装 Skill
+
+Skill 文件位于仓库 `skills/` 下，每个子目录就是一个独立 Skill（含 `SKILL.md` + `scripts/` + `reference/`）。把它放进 Claude Code 的 Skill 目录即可被识别。
+
+**方式一：克隆 + 拷贝（最简单）**
+
+```bash
+git clone https://github.com/ArMiku/bandori-skills.git
+cd bandori-skills
+
+# 安装到个人目录（所有项目可用）
+cp -r skills/* ~/.claude/skills/
+
+# 或只装到当前项目
+mkdir -p .claude/skills && cp -r skills/* .claude/skills/
+```
+
+**方式二：软链接（便于 `git pull` 跟随上游更新）**
+
+```bash
+git clone https://github.com/ArMiku/bandori-skills.git
+cd bandori-skills
+for s in bangdream-live bangdream-news bangdream-tweet; do
+  ln -sf "$(pwd)/skills/$s" ~/.claude/skills/$s
+done
+```
+
+**可选：安装 Scrapling（仅 tweet 深度搜索需要）**
+
+```bash
+pip install scrapling "camoufox[geoip]"
+python -m camoufox fetch   # 下载 Camoufox 浏览器内核（约 320MB）
+```
+
+### 验证
+
+定时推送脚本可单独验证：
+
+```bash
+python skills/bangdream-news/scripts/scan_news.py scan
+python skills/bangdream-tweet/scripts/scan_tweets.py scan
+```
+
+首次运行会自动在 `~/.bangdream-news/`、`~/.bangdream-tweet/` 下生成 `state.json` 去重状态文件（可用 `--state-file` 或同名环境变量覆盖路径）。
 
 ---
 
-### 注意事项
+## 注意事项
 
-- 当前已知在 `claude code` 下使用 `mimo` 系列模型(如`mimo-v2.5-pro`)时必须指定 `/bangdream-live` 使用 skill，不会根据 query 自动加载。
+- 已知在 Claude Code 下使用 `mimo` 系列模型（如 `mimo-v2.5-pro`）时，**不会按 query 自动加载 Skill**，需用 `/bangdream-live` 等斜杠命令显式触发。
+- bang-dream.com 与 nitter 的站点策略可能随时间变化；抓取层以各 Skill 的 `reference/fetch-strategy.md` 为准（标注了验证日期）。
 
 ---
 
 ## 路线图
 
-已实现 / 当前版本：
+**已实现：**
 
-- live / event 页面查询
-- news 页面查询 + rss 更新定时推送
-- 官方推文查询 + rss 更新定时推送
+- ✅ Live / Event 页面查询
+- ✅ News 页面查询 + RSS 增量推送
+- ✅ 官方推文查询 + RSS 增量推送
 
-计划中：
+**计划中：**
 
-- discographies 页面查询
-- schedule 页面查询
-
+- ⬜ Discographies 页面查询
+- ⬜ Schedule 页面查询
