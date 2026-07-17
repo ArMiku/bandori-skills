@@ -10,15 +10,16 @@
 
 <br>
 
-**帮你在 [bang-dream 官网](https://bang-dream.com) 查询 Live / News / 官方推文相关信息的 Agent Skill 集合。**
+**帮你在 [bang-dream 官网](https://bang-dream.com) 查询 Live / News / 官方推文 / Discography 相关信息的 Agent Skill 集合。**
 
-涵盖三个相互独立、按需加载的 Skill：
+涵盖四个相互独立、按需加载的 Skill：
 
 | Skill | 能力 |
 |-------|------|
 | [`bangdream-live`](./skills/bangdream-live) | Live / Event 票务、抽选、场馆、场贩、特典等 |
 | [`bangdream-news`](./skills/bangdream-news) | 官网 News 资讯查询 + RSS 增量推送 |
 | [`bangdream-tweet`](./skills/bangdream-tweet) | 官方 X（[@bang_dream_info](https://x.com/bang_dream_info)）推文查询 + RSS 增量推送 |
+| [`bangdream-discography`](./skills/bangdream-discography) | Discography（CD / 单曲 / Album / Blu-ray / 音楽配信 / LP）发售日、收录曲、特典、品番、価格等 |
 
 对话中直接提问即可调用；定时推送脚本输出宿主中立 JSON，可对接 OpenClaw / Hermes / cron 等调度器。
 
@@ -111,7 +112,7 @@
 
 ## 使用场景
 
-- **交互式对话**：在 Claude Code / Codex / Hermes / OpenClaw 等 Agent 中直接问「roselia 最近的 live」「这两天有什么 news」「官方推特发了啥」，Skill 会按 `description` 自动加载；也可用 `/bangdream-live`、`/bangdream-news`、`/bangdream-tweet` 斜杠命令显式触发。
+- **交互式对话**：在 Claude Code / Codex / Hermes / OpenClaw 等 Agent 中直接问「roselia 最近的 live」「这两天有什么 news」「官方推特发了啥」「mygo 出过哪些 CD」，Skill 会按 `description` 自动加载；也可用 `/bangdream-live`、`/bangdream-news`、`/bangdream-tweet`、`/bangdream-discography` 斜杠命令显式触发。
 - **定时 / 推送**：`scan_news.py`、`scan_tweets.py` 只负责「抓 RSS → 比对 state 去重 → 吐 JSON」，不绑渲染、不绑调度器。由 cron / OpenClaw / Hermes 等常驻服务拉起，自行把 JSON 渲染成 markdown / 飞书卡片 / webhook 推送。`count=0` 表示无更新，是否静默由调用方决定。
 
 ---
@@ -148,7 +149,7 @@ mkdir -p .claude/skills && cp -r skills/* .claude/skills/
 ```bash
 git clone https://github.com/ArMiku/bandori-skills.git
 cd bandori-skills
-for s in bangdream-live bangdream-news bangdream-tweet; do
+for s in bangdream-live bangdream-news bangdream-tweet bangdream-discography; do
   ln -sf "$(pwd)/skills/$s" ~/.claude/skills/$s
 done
 ```
@@ -175,7 +176,7 @@ python skills/bangdream-tweet/scripts/scan_tweets.py scan
 
 ## 注意事项
 
-- 已知在 Claude Code 下使用 `mimo` 系列模型（如 `mimo-v2.5-pro`）时，**不会按 query 自动加载 Skill**，需用 `/bangdream-live` 等斜杠命令显式触发。
+- 已知在 Claude Code 下使用 `mimo` 系列模型（如 `mimo-v2.5-pro`）时，**不会按 query 自动加载 Skill**，需用 `/bangdream-live`、`/bangdream-discography` 等斜杠命令显式触发。
 - bang-dream.com 与 nitter 的站点策略可能随时间变化；抓取层以各 Skill 的 `reference/fetch-strategy.md` 为准（标注了验证日期）。
 
 ---
@@ -187,8 +188,8 @@ python skills/bangdream-tweet/scripts/scan_tweets.py scan
 - ✅ Live / Event 页面查询
 - ✅ News 页面查询 + RSS 增量推送
 - ✅ 官方推文查询 + RSS 增量推送
+- ✅ Discography（ディスコグラフィ）页面查询
 
 **计划中：**
 
-- ⬜ Discographies 页面查询
 - ⬜ Schedule 页面查询
